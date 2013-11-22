@@ -1,0 +1,87 @@
+<html><head>
+<link href="http://vjs.zencdn.net/c/video-js.css" rel="stylesheet">
+<script src="http://vjs.zencdn.net/c/video.js"></script>
+<!--script src="../plugin/video.3.2.dev.js"></script-->
+
+<link href="/media/vast/vast.plugin.css" rel="stylesheet">
+<script src="/media/vast/4.0/vast.plugin.js"></script>
+
+</head><body>
+
+<video id="video" class="video-js vjs-default-skin" controls
+  preload="auto" width="640" height="360">
+    <source src="https://s3.amazonaws.com/telemundo_ar_video/buck_bunny_iphone.mp4" type='video/mp4' />
+    <source src="rtmp://video.telemundoarkansas.com/cfx/st/mp4:buck_bunny_iphone.mp4" type='rtmp/mp4' />
+
+</video>
+
+<script type="text/javascript">
+    var options = {
+        ads: {
+            'skipAd': {
+                'enabled': false,
+                'timeOut': 5
+            },
+            'servers'  : [
+                {
+                    'apiAddress': 'http://g.adspeed.net/ad.php?do=vast&amp;zid=48578&amp;wd=-1&amp;ht=-1&amp;cb=1383871894'
+                    //'apiAddress' : 'http://some.domain/xdr-redirect/?http://some.domain/xml/vast.xml', //for xdr only
+                    //'xdrMethod': 'yql' //['yql' | 'xdr']
+                }
+            ],
+            'schedule' : [
+                {
+                    'position' : 'pre-roll'
+                }
+            ]
+        }
+    };
+    _V_("video", options);
+</script>
+
+</body></html>
+
+{##}
+{#<link href="/media/videojs/video-js.css" rel="stylesheet" type="text/css">#}
+{#<link href="/media/vast/vast.video.css" rel="stylesheet" type="text/css">#}
+{##}
+{#<script src="/media//videojs/minified.video.js"></script>#}
+{#<script src="/media/vast/responsive.video.js"></script>#}
+{#<script src="/media/vast/vast.js"></script>#}
+{#<script src="/media/vast/vast.video.js"></script>#}
+{##}
+{##}
+{#<video id="vid1" class="video-js vjs-default-skin"#}
+{#  controls preload="auto" width="640" height="264"#}
+{#  poster="http://video-js.zencoder.com/oceans-clip.png"#}
+{#  data-setup='{"example_option":true}'>#}
+{#    <source src="rtmp://video.telemundoarkansas.com/cfx/st/mp4:buck_bunny_iphone.mp4" type='rtmp/mp4' />#}
+{#    <source src="https://s3.amazonaws.com/telemundo_ar_video/buck_bunny_iphone.mp4" type='video/mp4' />#}
+{##}
+{# <source src="http://video-js.zencoder.com/oceans-clip.webm" type='video/webm' />#}
+{# <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg' />#}
+{#</video>#}
+{#  <style type="text/css">#}
+{#    #vid1 {#}
+{#      width: 75%;#}
+{#    }#}
+{#  </style>#}
+{##}
+{##}
+{#  <script>#}
+{#    (function() {#}
+{#      var vid1;#}
+{##}
+{#      // register the plugins#}
+{#      _V_.plugin('responsive', responsive);#}
+{#      _V_.plugin('vast', vast);#}
+{##}
+{#      // initialize it#}
+{#      vid1 = _V_('vid1');#}
+{#      vid1.responsive();#}
+{##}
+{#      // vid1.vast({VASTServers: ['http://ad.doubleclick.net/pfadx/N270.126913.6102203221521/B3876671.21;dcadv=2215309;sz=0x0;ord=%5btimestamp%5d;dcmt=text/xml']});#}
+{##}
+{#      vid1.vast({VASTServers: ['http://g.adspeed.net/ad.php?do=vast&amp;zid=48578&amp;wd=-1&amp;ht=-1&amp;cb=1383871894']});#}
+{#    })();#}
+{#  </script>#}
