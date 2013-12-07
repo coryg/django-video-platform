@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
 from django.db import models
-from mediascope_cms import boto
+import boto
 
 class Pipeline(models.Model):
 	aws_pipeline_id = models.CharField(max_length=50, unique=True)
