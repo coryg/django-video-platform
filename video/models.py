@@ -1,7 +1,10 @@
 import os
+import datetime
 from django.conf import settings
 from django.db import models
 import boto
+from django.utils import timezone
+
 
 class Pipeline(models.Model):
 	aws_pipeline_id = models.CharField(max_length=50, unique=True)
@@ -17,6 +20,9 @@ class Pipeline(models.Model):
 
 	@staticmethod
 	def sync_with_aws():
+		#LOG THIS WITH THE SYNC DB
+		AWSSyncHistory.create_sync('PIPELINE')
+
 		et = boto.connect_elastictranscoder(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
 		pipelines = et.list_pipelines()
 		for p in pipelines['Pipelines']:
@@ -33,6 +39,18 @@ class Pipeline(models.Model):
 			found_object.input_bucket = p['InputBucket']
 			found_object.output_bucket = p['ContentConfig']['Bucket']
 			found_object.save()
+
+	@staticmethod
+	def sync_required():
+		aws_sync = AWSSyncHistory.get_sync('PIPELINE')
+		if aws_sync == None:
+			return True
+		else:
+			hrs = datetime.timedelta(hours=4)
+			if timezone.now() > (aws_sync.synced_at + hrs):
+				return True
+			else:
+				return False
 
 	def import_videos(self):
 		s3 = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
@@ -108,7 +126,22 @@ class RenderPreset(models.Model):
 		return self.name
 
 	@staticmethod
+	def sync_required():
+		aws_sync = AWSSyncHistory.get_sync('RENDER_PRESET')
+		if aws_sync == None:
+			return True
+		else:
+			hrs = datetime.timedelta(hours=4)
+			if timezone.now() > (aws_sync.synced_at + hrs):
+				return True
+			else:
+				return False
+
+	@staticmethod
 	def sync_with_aws():
+		#LOG THIS WITH THE SYNC DB
+		AWSSyncHistory.create_sync('RENDER_PRESET')
+
 		et = boto.connect_elastictranscoder(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
 		presets = et.list_presets()
 		for p in presets['Presets']:
@@ -229,3 +262,32 @@ class Render(models.Model):
 			'ThumbnailPattern': 'thumb-' + self.asset_id + '-{count}',
 			'Key': self.generate_filename()
 		}
+
+
+class AWSSyncHistory(models.Model):
+	SYNC_TYPE_CHOICES = (
+	('PIPELINE', 'Pipeline'),
+	('OBJECTS', 'Object (Files)'),
+	('TRANSCODE_JOB', 'Transcode Job'),
+	('RENDER_PRESET', 'Render Preset'),
+	)
+	synced_at = models.DateTimeField(auto_now_add=True)
+	type = models.CharField(max_length=20, choices=SYNC_TYPE_CHOICES)
+
+	@staticmethod
+	def create_sync(obj_type):
+		return AWSSyncHistory(type=obj_type).save()
+
+	@staticmethod
+	def get_sync(obj_type):
+		try:
+			return AWSSyncHistory.objects.filter(type=obj_type).order_by('-synced_at')[0]
+		except:
+			return None
+
+	@staticmethod
+	def is_first_load():
+		if AWSSyncHistory.objects.all().count() == 0:
+			return True
+		else:
+			return False
