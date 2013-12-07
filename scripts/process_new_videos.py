@@ -13,12 +13,10 @@ def setup_environment():
 setup_environment()
 
 
-from document.documentCleanUp import removeDocumentPendingDelete
-
 def main(argv=None):
 
 	try:
-		removeDocumentPendingDelete()
+		pass
 
 	except Exception as exc:
 		logging.exception(exc)
